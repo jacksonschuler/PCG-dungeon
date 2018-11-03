@@ -9,7 +9,10 @@ public class BoardManager : MonoBehaviour {
 
     public int minRoomSize;
     public int maxRoomSize;
+    public GameObject[] floorTiles;
+    public GameObject tile;
 
+    private GameObject[,] boardPosFloor;
 
     public class Subdungeon
     {
@@ -19,6 +22,7 @@ public class BoardManager : MonoBehaviour {
         public Rect rect;
         public Rect room = new Rect(-1, -1, 0, 0);
 
+        
 
         public Subdungeon(Rect mrect)
         {
@@ -76,6 +80,32 @@ public class BoardManager : MonoBehaviour {
 
             return true;
         }
+
+        public void CreateRooms()
+        {
+            if (left != null)
+            {
+                left.CreateRooms();
+            }
+            if (right != null)
+            {
+                right.CreateRooms();
+            }
+
+            if (isLeaf())
+            {
+
+                int roomWidth = (int)Random.Range(rect.width / 2, rect.width - 2);
+                int roomHeight = (int)Random.Range(rect.height / 2, rect.height - 2); 
+                int roomX = (int)Random.Range(1, rect.width - roomWidth - 1);
+                int roomY = (int)Random.Range(1, rect.height - roomHeight - 1);
+
+                room = new Rect(rect.x + roomX, rect.y + roomY, roomWidth, roomHeight);
+                
+
+            }
+        }
+
     }
 
     public void CreateBSP(Subdungeon subdungeon)
@@ -93,11 +123,45 @@ public class BoardManager : MonoBehaviour {
         }
     }
 
+    public void DrawRooms(Subdungeon subdungeon)
+    {
+        if (subdungeon == null)
+        {
+            return;
+        }
+        if (subdungeon.isLeaf())
+        {
+ 
+            for (int i = (int)subdungeon.room.x; i < subdungeon.room.xMax; i++)
+            {
+                
+                for (int j = (int)subdungeon.room.y; j < subdungeon.room.yMax; j++)
+                {
+                 
+                    int randIndex = Random.Range(0, floorTiles.Length); //pick a random tile from the array
+                    Vector3 pos = new Vector3(i, j, 0f); //the position where the tile will be placed
+
+                    GameObject newInstance = Instantiate(floorTiles[randIndex], pos, Quaternion.identity) as GameObject;
+                    newInstance.transform.SetParent(transform);
+
+                    boardPosFloor[i, j] = newInstance;
+                    
+                }
+            }
+        } else
+        {
+            DrawRooms(subdungeon.left);
+            DrawRooms(subdungeon.right);
+        }
+    }
 
     private void Start()
     {
         Subdungeon rootSubDungeon = new Subdungeon(new Rect(0, 0, rows, columns));
         CreateBSP(rootSubDungeon);
+        rootSubDungeon.CreateRooms();
+        boardPosFloor = new GameObject[rows, columns];
+        DrawRooms(rootSubDungeon);
     }
 
 }

@@ -217,10 +217,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c48b8e55a995c434ba59112fde295400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rows: 100
-  columns: 100
-  minRoomSize: 6
-  maxRoomSize: 10
+  rows: 50
+  columns: 50
+  minRoomSize: 8
+  maxRoomSize: 12
+  floorTiles:
+  - {fileID: 1119128939088756, guid: 764a0c9641612374080e00011d9957dd, type: 2}
+  - {fileID: 1632824060158762, guid: 7340377e3e877bc48a899d719077ac6c, type: 2}
+  - {fileID: 1612993747430578, guid: 9c44ee8b78cdf074a8777dbed086a86b, type: 2}
+  - {fileID: 1922852178333440, guid: 56995ca4ec5d8af43bee678ca070d106, type: 2}
+  tile: {fileID: 1618170241254318, guid: 1219d2fe3d9621c4ca17a44b4026564b, type: 2}
 --- !u!4 &619923466
 Transform:
   m_ObjectHideFlags: 0
