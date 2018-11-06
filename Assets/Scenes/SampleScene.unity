@@ -227,6 +227,7 @@ MonoBehaviour:
   - {fileID: 1612993747430578, guid: 9c44ee8b78cdf074a8777dbed086a86b, type: 2}
   - {fileID: 1922852178333440, guid: 56995ca4ec5d8af43bee678ca070d106, type: 2}
   tile: {fileID: 1618170241254318, guid: 1219d2fe3d9621c4ca17a44b4026564b, type: 2}
+  corridors: []
 --- !u!4 &619923466
 Transform:
   m_ObjectHideFlags: 0
