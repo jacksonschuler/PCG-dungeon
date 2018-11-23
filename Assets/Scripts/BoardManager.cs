@@ -10,10 +10,31 @@ public class BoardManager : MonoBehaviour {
     public int minRoomSize;
     public int maxRoomSize;
     public GameObject[] floorTiles;
-    public GameObject tile;
+
+    public GameObject[] wallTiles;
+
+    public GameObject baseTile;
+
+    public GameObject Bottom;
+
+    public GameObject Top;
+
+    public GameObject Left;
+
+    public GameObject Right;
+
+    public GameObject CornerBotRight;
+
+    public GameObject CornerBotLeft;
+
+    public GameObject CornerTopRight;
+
+    public GameObject CornerTopLeft;
+
     public List<Rect> corridors = new List<Rect>();
 
     private GameObject[,] boardPosFloor;
+    
 
     public class Subdungeon
     {
@@ -23,7 +44,7 @@ public class BoardManager : MonoBehaviour {
         public Rect rect;
         public Rect room = new Rect(-1, -1, 0, 0);
         public List<Rect> corridors = new List<Rect>();
-        public List<Rect> rooms = new List<Rect>();
+        
    
 
         public Subdungeon(Rect mrect)
@@ -89,69 +110,60 @@ public class BoardManager : MonoBehaviour {
             Rect rroom = right.GetRoom();
             Rect lroom = left.GetRoom();
 
-            Vector2 lpoint = new Vector2((int)Random.Range(lroom.x + 1, lroom.xMax - 1), (int)Random.Range(lroom.y + 1, lroom.yMax - 1));
-            Vector2 rpoint = new Vector2((int)Random.Range(rroom.x + 1, rroom.xMax - 1), (int)Random.Range(rroom.y + 1, rroom.yMax - 1));
+            Vector2 leftPt = new Vector2((int)Random.Range(lroom.x + 1, lroom.xMax - 1), (int)Random.Range(lroom.y + 1, lroom.yMax - 1));
+            Vector2 rightPt = new Vector2((int)Random.Range(rroom.x + 1, rroom.xMax - 1), (int)Random.Range(rroom.y + 1, rroom.yMax - 1));
 
-            // always be sure that left point is on the left to simplify the code
-            if (lpoint.x > rpoint.x)
+            if (leftPt.x > rightPt.x)
             {
-                Vector2 temp = lpoint;
-                lpoint = rpoint;
-                rpoint = temp;
+                Vector2 temp = leftPt;
+                leftPt = rightPt;
+                rightPt = temp;
             }
 
-            int w = (int)(lpoint.x - rpoint.x);
-            int h = (int)(lpoint.y - rpoint.y);
+            int w = (int)(leftPt.x - rightPt.x);
+            int h = (int)(leftPt.y - rightPt.y);
 
             
 
-            // if the points are not aligned horizontally
             if (w != 0)
             {
-                // choose at random to go horizontal then vertical or the opposite
+
                 if (Random.Range(0, 1) > 2)
                 {
-                    // add a corridor to the right
-                    corridors.Add(new Rect(lpoint.x, lpoint.y, Mathf.Abs(w) + 1, 1));
+                    corridors.Add(new Rect(leftPt.x, leftPt.y, Mathf.Abs(w) + 1, 1));
 
-                    // if left point is below right point go up
-                    // otherwise go down
                     if (h < 0)
                     {
-                        corridors.Add(new Rect(rpoint.x, lpoint.y, 1, Mathf.Abs(h)));
+                        corridors.Add(new Rect(rightPt.x, leftPt.y, 1, Mathf.Abs(h)));
                     }
                     else
                     {
-                        corridors.Add(new Rect(rpoint.x, lpoint.y, 1, -Mathf.Abs(h)));
+                        corridors.Add(new Rect(rightPt.x, leftPt.y, 1, -Mathf.Abs(h)));
                     }
                 }
                 else
                 {
-                    // go up or down
                     if (h < 0)
                     {
-                        corridors.Add(new Rect(lpoint.x, lpoint.y, 1, Mathf.Abs(h)));
+                        corridors.Add(new Rect(leftPt.x, leftPt.y, 1, Mathf.Abs(h)));
                     }
                     else
                     {
-                        corridors.Add(new Rect(lpoint.x, rpoint.y, 1, Mathf.Abs(h)));
+                        corridors.Add(new Rect(leftPt.x, rightPt.y, 1, Mathf.Abs(h)));
                     }
 
-                    // then go right
-                    corridors.Add(new Rect(lpoint.x, rpoint.y, Mathf.Abs(w) + 1, 1));
+                    corridors.Add(new Rect(leftPt.x, rightPt.y, Mathf.Abs(w) + 1, 1));
                 }
             }
             else
             {
-                // if the points are aligned horizontally
-                // go up or down depending on the positions
                 if (h < 0)
                 {
-                    corridors.Add(new Rect((int)lpoint.x, (int)lpoint.y, 1, Mathf.Abs(h)));
+                    corridors.Add(new Rect((int)leftPt.x, (int)leftPt.y, 1, Mathf.Abs(h)));
                 }
                 else
                 {
-                    corridors.Add(new Rect((int)rpoint.x, (int)rpoint.y, 1, Mathf.Abs(h)));
+                    corridors.Add(new Rect((int)rightPt.x, (int)rightPt.y, 1, Mathf.Abs(h)));
                 }
             }
 
@@ -183,7 +195,7 @@ public class BoardManager : MonoBehaviour {
                 int roomY = (int)Random.Range(1, rect.height - roomHeight - 1);
 
                 room = new Rect(rect.x + roomX, rect.y + roomY, roomWidth, roomHeight);
-                rooms.Add(room);
+                
                 
        
   
@@ -214,6 +226,9 @@ public class BoardManager : MonoBehaviour {
             }
             return new Rect(-1, -1, 0, 0);
         }
+
+
+
 
 
         
@@ -253,7 +268,7 @@ public class BoardManager : MonoBehaviour {
                     Vector3 pos = new Vector3(i, j, 0f); //the position where the tile will be placed
                     GameObject newInstance = Instantiate(floorTiles[randIndex], pos, Quaternion.identity) as GameObject;
                     newInstance.transform.SetParent(transform);
-
+                    
                     boardPosFloor[i, j] = newInstance;
                     
                 }
@@ -264,6 +279,117 @@ public class BoardManager : MonoBehaviour {
             DrawRooms(subdungeon.right);
         }
     }
+
+    public void DrawBase()
+    {
+        for (int i = 0; i < boardPosFloor.GetLength(0); i++)
+        {
+            for (int j = 0; j < boardPosFloor.GetLength(1); j++)
+            {
+                if (boardPosFloor[i,j] == null)
+                {
+                    
+                    Vector3 pos = new Vector3(i, j, 0f); //the position where the tile will be placed
+                    GameObject newInstance = Instantiate(baseTile, pos, Quaternion.identity) as GameObject;
+                    newInstance.transform.SetParent(transform);
+
+                    boardPosFloor[i, j] = newInstance;
+                }
+            }
+        }
+    }
+
+    public void DrawWalls()
+    {
+        for (int i = 0; i < boardPosFloor.GetLength(0); i++)
+        {
+            for (int j = 0; j < boardPosFloor.GetLength(1); j++)
+            {
+                if (boardPosFloor[i, j] != null) //if we are on a gametile
+                {
+
+                    if (boardPosFloor[i, j - 1] == null && j != columns && j != 0) //tile below (has correct sprite)
+                    {
+                        if (boardPosFloor[i-1,j-1] != null && i != rows && i != 0)
+                        {
+                            Debug.Log("any corner");
+                            Vector3 pos1 = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance1 = Instantiate(CornerTopLeft, pos1, Quaternion.identity) as GameObject;
+                            newInstance1.transform.SetParent(transform);
+
+                        } if (boardPosFloor[i + 1, j -1] != null && i != rows && i != 0) {
+                            Vector3 pos1 = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance1 = Instantiate(CornerTopRight, pos1, Quaternion.identity) as GameObject;
+                            newInstance1.transform.SetParent(transform);
+
+                        }
+
+                        else
+                        {
+                            Vector3 pos = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance = Instantiate(Bottom, pos, Quaternion.identity) as GameObject;
+                            newInstance.transform.SetParent(transform);
+
+                        }
+
+
+                        //boardPosFloor[i, j-1] = newInstance;
+                    }
+
+                    if (boardPosFloor[i,j+1] == null && j != columns && j != 0) //tile above
+                    {
+
+                        if (boardPosFloor[i - 1, j + 1] != null && i != rows && i != 0)
+                        {
+                            Vector3 pos1 = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance1 = Instantiate(CornerBotRight, pos1, Quaternion.identity) as GameObject;
+                            newInstance1.transform.SetParent(transform);
+
+                        }
+                        if (boardPosFloor[i + 1, j + 1] != null && i != rows && i != 0)
+                        {
+                            Vector3 pos1 = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance1 = Instantiate(CornerBotLeft, pos1, Quaternion.identity) as GameObject;
+                            newInstance1.transform.SetParent(transform);
+                        }
+                        else
+                        {
+                            Vector3 pos = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            GameObject newInstance = Instantiate(Top, pos, Quaternion.identity) as GameObject;
+                            newInstance.transform.SetParent(transform);
+                        }
+
+
+                        //boardPosFloor[i, j + 1] = newInstance;
+                    }
+
+                    if (boardPosFloor[i-1,j] == null && i != rows && i != 0) //tile to the left
+                    {
+                        Vector3 pos = new Vector3(i - 1, j, 0f); //the position where the tile will be placed
+                        GameObject newInstance = Instantiate(Left, pos, Quaternion.identity) as GameObject;
+                        newInstance.transform.SetParent(transform);
+
+                        //boardPosFloor[i - 1, j] = newInstance;
+                    }
+
+                    if (boardPosFloor[i + 1, j] == null && i != rows && i != 0) //tile to the right
+                    {
+                        
+                        Vector3 pos = new Vector3(i + 1, j, 0f); //the position where the tile will be placed
+                        GameObject newInstance = Instantiate(Right, pos, Quaternion.identity) as GameObject;
+                        newInstance.transform.SetParent(transform);
+                        //boardPosFloor[i + 1, j] = newInstance;
+                    }
+
+   
+
+
+
+                }
+            }
+        }
+    }
+
 
     public void DrawCorridors(Subdungeon subdungeon)
     {
@@ -281,14 +407,17 @@ public class BoardManager : MonoBehaviour {
             {
                 for (int j = (int)corridor.y; j < corridor.yMax; j++)
                 {
-                    Vector3 pos = new Vector3(i, j, 0f); //this made it work I dont know 8 and 4
-                    Vector3 pos2 = new Vector3(i+1, j+1, 0f);
-                    int rand = (int)Random.Range(0, floorTiles.Length);
-                    GameObject newInstance = Instantiate(floorTiles[rand], pos, Quaternion.identity) as GameObject;
-                    newInstance.transform.SetParent(transform);
-                    //for making hallways 2 tile wide
-                    GameObject newInstance2 = Instantiate(floorTiles[rand], pos2, Quaternion.identity) as GameObject;
-                    newInstance2.transform.SetParent(transform);
+
+                    if (boardPosFloor[i,j] == null)
+                    {
+                        Vector3 pos = new Vector3(i, j, 0f); //this made it work I dont know 8 and 4
+
+                        int rand = (int)Random.Range(0, floorTiles.Length);
+                        GameObject newInstance = Instantiate(floorTiles[rand], pos, Quaternion.identity) as GameObject;
+                        newInstance.transform.SetParent(transform);
+                        boardPosFloor[i, j] = newInstance;
+                    }
+
                 }
             }
         }
@@ -303,8 +432,13 @@ public class BoardManager : MonoBehaviour {
         rootSubDungeon.CreateRooms();
         boardPosFloor = new GameObject[rows, columns];
         
+        
         DrawRooms(rootSubDungeon);
         DrawCorridors(rootSubDungeon);
+        DrawWalls();
+        DrawBase();
+        
+        
     }
 
 }
