@@ -35,7 +35,9 @@ public class BoardManager : MonoBehaviour {
 
     private GameObject[,] boardPosFloor;
 
-    public GameObject player; 
+    public GameObject player;
+
+    public Camera minimap;
     
 
     public class Subdungeon
@@ -435,10 +437,14 @@ public class BoardManager : MonoBehaviour {
         DrawCorridors(rootSubDungeon);
         DrawWalls();
         DrawBase();
-        Vector3 pos = new Vector3(rootSubDungeon.GetRoom().width / 2, rootSubDungeon.GetRoom().height / 2, 0f);
-        player.transform.position = pos;
-        
-        
+
+        Vector3 pos = new Vector3(rootSubDungeon.GetRoom().width / 2, rootSubDungeon.GetRoom().height / 2, 0f); 
+        player.transform.position = pos; //set player position
+
+
+        Vector3 center = new Vector3(rows/2,columns/2,-1f);
+        minimap.transform.position = center;
+
     }
 
 }

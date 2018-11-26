@@ -16,22 +16,9 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
     //basic movement using WASD
-	void Update () {
-        if (Input.GetKey(KeyCode.D))
-        {
-            body.AddForce(Vector2.right * moveSpeed);
-        }
+	void FixedUpdate () {
+        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            body.AddForce(Vector2.left * moveSpeed);
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            body.AddForce(Vector2.up * moveSpeed);
-        }
-        if (Input.GetKey(KeyCode.S)) {
-            body.AddForce(Vector2.down * moveSpeed);
-        }
+        body.transform.position = transform.position + movement * Time.deltaTime * moveSpeed;
     }
 }
