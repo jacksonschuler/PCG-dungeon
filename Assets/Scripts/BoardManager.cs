@@ -34,6 +34,8 @@ public class BoardManager : MonoBehaviour {
     public List<Rect> corridors = new List<Rect>();
 
     private GameObject[,] boardPosFloor;
+
+    public GameObject player; 
     
 
     public class Subdungeon
@@ -282,19 +284,15 @@ public class BoardManager : MonoBehaviour {
 
     public void DrawBase()
     {
-        for (int i = 0; i < boardPosFloor.GetLength(0); i++)
+        for (int i = -rows; i < rows*2; i++)
         {
-            for (int j = 0; j < boardPosFloor.GetLength(1); j++)
+            for (int j = -columns; j < columns*2; j++)
             {
-                if (boardPosFloor[i,j] == null)
-                {
-                    
-                    Vector3 pos = new Vector3(i, j, 0f); //the position where the tile will be placed
-                    GameObject newInstance = Instantiate(baseTile, pos, Quaternion.identity) as GameObject;
-                    newInstance.transform.SetParent(transform);
 
-                    boardPosFloor[i, j] = newInstance;
-                }
+                Vector3 pos = new Vector3(i, j, 0f); //the position where the tile will be placed
+                GameObject newInstance = Instantiate(baseTile, pos, Quaternion.identity) as GameObject;
+                newInstance.transform.SetParent(transform);
+
             }
         }
     }
@@ -437,6 +435,8 @@ public class BoardManager : MonoBehaviour {
         DrawCorridors(rootSubDungeon);
         DrawWalls();
         DrawBase();
+        Vector3 pos = new Vector3(rootSubDungeon.GetRoom().width / 2, rootSubDungeon.GetRoom().height / 2, 0f);
+        player.transform.position = pos;
         
         
     }
