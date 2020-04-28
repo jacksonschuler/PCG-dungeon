@@ -4,42 +4,41 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour {
 
-    public int rows;
-    public int columns;
+    public int rows; //the number of rows
+    public int columns; //the number of columns
 
-    public int minRoomSize;
-    public int maxRoomSize;
-    public GameObject[] floorTiles;
+    public int minRoomSize; //the max size of a room
+    public int maxRoomSize; //the min size of a room
 
-    public GameObject[] wallTiles;
+    public GameObject[] floorTiles; //array of tiles for the floors
 
-    public GameObject baseTile;
+    public GameObject baseTile; //the base tile
 
-    public GameObject Bottom;
+    public GameObject Bottom; //bottom wall
 
-    public GameObject Top;
+    public GameObject Top; //top wall
 
-    public GameObject Left;
+    public GameObject Left; //left facing wall
 
-    public GameObject Right;
+    public GameObject Right; //right facing wall
 
-    public GameObject CornerBotRight;
+    public GameObject CornerBotRight; //bottom right corner
 
-    public GameObject CornerBotLeft;
+    public GameObject CornerBotLeft; //bottom left corner
 
-    public GameObject CornerTopRight;
+    public GameObject CornerTopRight; //top right corner
 
-    public GameObject CornerTopLeft;
+    public GameObject CornerTopLeft; //top left corner
 
-    public List<Rect> corridors = new List<Rect>();
+    public List<Rect> corridors = new List<Rect>(); //list of rectangles for the corridors
 
-    private GameObject[,] boardPosFloor;
+    private GameObject[,] boardPosFloor; //array representation of rooms
 
-    public GameObject player;
+    public GameObject player; //the player
 
-    public Camera minimap;
+    public Camera minimap; //the camera depicting the minimap
 
-    public GameObject Darkness;
+    public GameObject Darkness; //the darkness sprite
 
     public class Subdungeon
     {
@@ -112,6 +111,7 @@ public class BoardManager : MonoBehaviour {
 
         public void CreateCorridor(Subdungeon left, Subdungeon right)
         {
+            //picks a random position in each room and connect those points
             Rect rroom = right.GetRoom();
             Rect lroom = left.GetRoom();
 
@@ -125,8 +125,8 @@ public class BoardManager : MonoBehaviour {
                 rightPt = temp;
             }
 
-            int w = (int)(leftPt.x - rightPt.x);
-            int h = (int)(leftPt.y - rightPt.y);
+            int w = (int)(leftPt.x - rightPt.x); //do those random points have the same width?
+            int h = (int)(leftPt.y - rightPt.y); //do those random points have the same height?
 
             
 
@@ -177,6 +177,8 @@ public class BoardManager : MonoBehaviour {
 
         public void CreateRooms()
         {
+
+            //Get to a leaf node
             if (left != null)
             {
                 left.CreateRooms();
@@ -190,7 +192,7 @@ public class BoardManager : MonoBehaviour {
                 CreateCorridor(left, right);
             }
 
-
+            //if we are on a leaf, create a new room
             if (isLeaf())
             {
 
@@ -229,7 +231,7 @@ public class BoardManager : MonoBehaviour {
                     return rightRoom;
                 }
             }
-            return new Rect(-1, -1, 0, 0);
+            return new Rect(-1, -1, 0, 0); // a null rectangle
         }
 
 
@@ -240,6 +242,7 @@ public class BoardManager : MonoBehaviour {
     }
 
     public void CreateBSP(Subdungeon subdungeon)
+    //Create a BinarySpacePartition from a given subdungeon
     {
         if (subdungeon.isLeaf())
         {
@@ -256,6 +259,7 @@ public class BoardManager : MonoBehaviour {
 
     public void DrawRooms(Subdungeon subdungeon)
     {
+        //Instantiates the tiles on the tiles into the game based on the construction of the rooms from CreateRooms()
         if (subdungeon == null)
         {
             return;
@@ -286,6 +290,7 @@ public class BoardManager : MonoBehaviour {
     }
 
     public void DrawBase()
+    //Draws the dark coloured tile below the dungeon to fill in the space between rooms and corridors
     {
         for (int i = -rows; i < rows*2; i++)
         {
@@ -301,6 +306,8 @@ public class BoardManager : MonoBehaviour {
     }
 
     public void DrawWalls()
+    //Draws the walls around the rooms and the corridors that are procedurally generated. 
+    //Checks to ensure that the correc tiles are being placed in correct position
     {
         for (int i = 0; i < boardPosFloor.GetLength(0); i++)
         {
@@ -313,13 +320,13 @@ public class BoardManager : MonoBehaviour {
                     {
                         if (boardPosFloor[i-1,j-1] != null && i != rows && i != 0)
                         {
-                            Debug.Log("any corner");
-                            Vector3 pos1 = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            //check if we are on a corner
+                            Vector3 pos1 = new Vector3(i, j - 1, 0f);
                             GameObject newInstance1 = Instantiate(CornerTopLeft, pos1, Quaternion.identity) as GameObject;
                             newInstance1.transform.SetParent(transform);
 
                         } if (boardPosFloor[i + 1, j -1] != null && i != rows && i != 0) {
-                            Vector3 pos1 = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            Vector3 pos1 = new Vector3(i, j - 1, 0f); 
                             GameObject newInstance1 = Instantiate(CornerTopRight, pos1, Quaternion.identity) as GameObject;
                             newInstance1.transform.SetParent(transform);
 
@@ -327,14 +334,11 @@ public class BoardManager : MonoBehaviour {
 
                         else
                         {
-                            Vector3 pos = new Vector3(i, j - 1, 0f); //the position where the tile will be placed
+                            Vector3 pos = new Vector3(i, j - 1, 0f); 
                             GameObject newInstance = Instantiate(Bottom, pos, Quaternion.identity) as GameObject;
                             newInstance.transform.SetParent(transform);
 
                         }
-
-
-                        //boardPosFloor[i, j-1] = newInstance;
                     }
 
                     if (boardPosFloor[i,j+1] == null && j != columns && j != 0) //tile above
@@ -342,50 +346,42 @@ public class BoardManager : MonoBehaviour {
 
                         if (boardPosFloor[i - 1, j + 1] != null && i != rows && i != 0)
                         {
-                            Vector3 pos1 = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            Vector3 pos1 = new Vector3(i, j + 1, 0f); 
                             GameObject newInstance1 = Instantiate(CornerBotRight, pos1, Quaternion.identity) as GameObject;
                             newInstance1.transform.SetParent(transform);
 
                         }
                         if (boardPosFloor[i + 1, j + 1] != null && i != rows && i != 0)
                         {
-                            Vector3 pos1 = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            Vector3 pos1 = new Vector3(i, j + 1, 0f); 
                             GameObject newInstance1 = Instantiate(CornerBotLeft, pos1, Quaternion.identity) as GameObject;
                             newInstance1.transform.SetParent(transform);
                         }
                         else
                         {
-                            Vector3 pos = new Vector3(i, j + 1, 0f); //the position where the tile will be placed
+                            Vector3 pos = new Vector3(i, j + 1, 0f); 
                             GameObject newInstance = Instantiate(Top, pos, Quaternion.identity) as GameObject;
                             newInstance.transform.SetParent(transform);
                         }
-
-
-                        //boardPosFloor[i, j + 1] = newInstance;
                     }
 
                     if (boardPosFloor[i-1,j] == null && i != rows && i != 0) //tile to the left
                     {
-                        Vector3 pos = new Vector3(i - 1, j, 0f); //the position where the tile will be placed
+                        Vector3 pos = new Vector3(i - 1, j, 0f); 
                         GameObject newInstance = Instantiate(Left, pos, Quaternion.identity) as GameObject;
                         newInstance.transform.SetParent(transform);
 
-                        //boardPosFloor[i - 1, j] = newInstance;
+
                     }
 
                     if (boardPosFloor[i + 1, j] == null && i != rows && i != 0) //tile to the right
                     {
                         
-                        Vector3 pos = new Vector3(i + 1, j, 0f); //the position where the tile will be placed
+                        Vector3 pos = new Vector3(i + 1, j, 0f); 
                         GameObject newInstance = Instantiate(Right, pos, Quaternion.identity) as GameObject;
                         newInstance.transform.SetParent(transform);
-                        //boardPosFloor[i + 1, j] = newInstance;
+
                     }
-
-   
-
-
-
                 }
             }
         }
@@ -394,6 +390,7 @@ public class BoardManager : MonoBehaviour {
 
     public void DrawCorridors(Subdungeon subdungeon)
     {
+        //Draws the corridors onto the map based on the construction given from the CreateCorridors()
         if (subdungeon == null)
         {
             return;
@@ -432,33 +429,28 @@ public class BoardManager : MonoBehaviour {
         CreateBSP(rootSubDungeon);
         rootSubDungeon.CreateRooms();
         boardPosFloor = new GameObject[rows, columns];
-        
-        
+
         DrawRooms(rootSubDungeon);
         DrawCorridors(rootSubDungeon);
         DrawWalls();
         DrawBase();
 
-        //Vector3 pos = new Vector3(rootSubDungeon.GetRoom().width / 2, rootSubDungeon.GetRoom().height / 2, 0f); 
-        Vector3 playerPos = new Vector3(rootSubDungeon.GetRoom().xMax / 2, rootSubDungeon.GetRoom().yMax / 2, 0f);
+
+        Vector3 playerPos = new Vector3(rootSubDungeon.GetRoom().xMax / 2, rootSubDungeon.GetRoom().yMax / 2, 0f); //put the player in the middle of the first room
         player.transform.position = playerPos; //set player position
 
-
-        Vector3 center = new Vector3(rows/2,columns/2,-1f);
+        Vector3 center = new Vector3(rows/2,columns/2,-1f); //have the minimap render out a top down view of the center of the map
         minimap.transform.position = center;
-        minimap.orthographicSize = rows / 2f;
+        minimap.orthographicSize = rows / 2f; //keep size large enough that it can see the entire dungeon output
         playerPos.z = -9f;
         Darkness.transform.position = playerPos;
-        
-
     }
 
     private void Update()
     {
-        GameObject player = GameObject.Find("Player");
         Vector3 pos = player.transform.position;
-        pos.z = -9f;
-        Darkness.transform.position = pos;
+        pos.z = -9f; //the darkness must be above the main camera but below the minimap camera 
+        Darkness.transform.position = pos; //the darkness follows the player, moves when the player does.
     }
 
 }

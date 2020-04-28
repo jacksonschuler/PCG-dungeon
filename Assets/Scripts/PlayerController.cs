@@ -7,8 +7,11 @@ public class PlayerController : MonoBehaviour {
     // Use this for initialization
 
     Rigidbody2D body;
+
     Animator anim;
+
     SpriteRenderer rend;
+
     float moveSpeed = 3.0f;
 
 
@@ -18,8 +21,7 @@ public class PlayerController : MonoBehaviour {
         rend = GetComponent<SpriteRenderer>();
 	}
 	
-	// Update is called once per frame
-    //basic movement using WASD
+
 	void FixedUpdate () {
 
 
